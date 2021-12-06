@@ -37,8 +37,8 @@ from math import radians
 from mathutils import Matrix, Vector, Quaternion, Euler
 
 # Globals
-male_model_path = 'data/SMPL_unity_v.1.0.0/smpl/Models/SMPL_m_unityDoubleBlends_lbs_10_scale5_207_v1.0.0.fbx'
-female_model_path = 'data/SMPL_unity_v.1.0.0/smpl/Models/SMPL_f_unityDoubleBlends_lbs_10_scale5_207_v1.0.0.fbx'
+male_model_path = 'data/vibe_data/SMPL_m_unityDoubleBlends_lbs_10_scale5_207_v1.fbx'
+female_model_path = 'data/vibe_data/SMPL_f_unityDoubleBlends_lbs_10_scale5_207_v1.fbx'
 
 fps_source = 30
 fps_target = 30
@@ -249,95 +249,99 @@ def export_animated_mesh(output_path):
 
 
 if __name__ == '__main__':
-    try:
-        if bpy.app.background:
+#if bpy.app.background:
 
-            parser = argparse.ArgumentParser(description='Create keyframed animated skinned SMPL mesh from VIBE output')
-            parser.add_argument('--input', dest='input_path', type=str, required=True,
-                                help='Input file or directory')
-            parser.add_argument('--output', dest='output_path', type=str, required=True,
-                                help='Output file or directory')
-            parser.add_argument('--fps_source', type=int, default=fps_source,
-                                help='Source framerate')
-            parser.add_argument('--fps_target', type=int, default=fps_target,
-                                help='Target framerate')
-            parser.add_argument('--gender', type=str, default=gender,
-                                help='Always use specified gender')
-            parser.add_argument('--start_origin', type=int, default=start_origin,
-                                help='Start animation centered above origin')
-            parser.add_argument('--person_id', type=int, default=1,
-                                help='Detected person ID to use for fbx animation')
+    # parser = argparse.ArgumentParser(description='Create keyframed animated skinned SMPL mesh from VIBE output')
+    # parser.add_argument('--input', dest='input_path', type=str, required=True,
+    #                     help='Input file or directory')
+    # parser.add_argument('--output', dest='output_path', type=str, required=True,
+    #                     help='Output file or directory')
+    # parser.add_argument('--fps_source', type=int, default=fps_source,
+    #                     help='Source framerate')
+    # parser.add_argument('--fps_target', type=int, default=fps_target,
+    #                     help='Target framerate')
+    # parser.add_argument('--gender', type=str, default=gender,
+    #                     help='Always use specified gender')
+    # parser.add_argument('--start_origin', type=int, default=start_origin,
+    #                     help='Start animation centered above origin')
+    # parser.add_argument('--person_id', type=int, default=1,
+    #                     help='Detected person ID to use for fbx animation')
 
-            args = parser.parse_args()
+    # args = parser.parse_args()
 
-            input_path = args.input_path
-            output_path = args.output_path
-            #input_path = "./output/sample_video/vibe_output.pkl"
-            #output_path = "./output/sample_video/fbx_output.fbx"
-            
-            if not os.path.exists(input_path):
-                print('ERROR: Invalid input path')
-                sys.exit(1)
+    # input_path = args.input_path
+    # output_path = args.output_path
 
-            fps_source = args.fps_source
-            fps_target = args.fps_target
+    input_path = "output/sample_video/vibe_output.pkl"
+    output_path = "output/sample_video/fbx_output.fbx"
+    fps_source = 30
+    fps_target = 30
+    gender = 'male'
+    start_origin = 1  
+    person_id = 1
+    
+    if not os.path.exists(input_path):
+        print('ERROR: Invalid input path')
+        sys.exit(1)
 
-            gender = args.gender
+    # fps_source = args.fps_source
+    # fps_target = args.fps_target
 
-            start_origin = args.start_origin
+    # gender = args.gender
 
-        # end if bpy.app.background
+    # start_origin = args.start_origin
+    # end if bpy.app.background
 
-        startTime = time.perf_counter()
+    startTime = time.perf_counter()
 
-        # Process data
-        cwd = os.getcwd()
+    # Process data
+    cwd = os.getcwd()
 
-        # Turn relative input/output paths into absolute paths
-        if not input_path.startswith(os.path.sep):
-            input_path = os.path.join(cwd, input_path)
+    # Turn relative input/output paths into absolute paths
+    if not input_path.startswith(os.path.sep):
+        input_path = os.path.join(cwd, input_path)
 
-        if not output_path.startswith(os.path.sep):
-            output_path = os.path.join(cwd, output_path)
+    if not output_path.startswith(os.path.sep):
+        output_path = os.path.join(cwd, output_path)
 
-        print('Input path: ' + input_path)
-        print('Output path: ' + output_path)
+    print('Input path: ' + input_path)
+    print('Output path: ' + output_path)
+    
+    if not (output_path.endswith('.fbx') or output_path.endswith('.glb')):
+        print('ERROR: Invalid output format (must be .fbx or .glb)')
+        sys.exit(1)
 
-        if not (output_path.endswith('.fbx') or output_path.endswith('.glb')):
-            print('ERROR: Invalid output format (must be .fbx or .glb)')
+    # Process pose file
+    if input_path.endswith('.pkl'):
+        if not os.path.isfile(input_path):
+            print('ERROR: Invalid input file')
             sys.exit(1)
 
-        # Process pose file
-        if input_path.endswith('.pkl'):
-            if not os.path.isfile(input_path):
-                print('ERROR: Invalid input file')
-                sys.exit(1)
+        poses_processed = process_poses(
+            input_path=input_path,
+            gender=gender,
+            fps_source=fps_source,
+            fps_target=fps_target,
+            start_origin=start_origin,
+            person_id=person_id
+        )
+        export_animated_mesh(output_path)
 
-            poses_processed = process_poses(
-                input_path=input_path,
-                gender=gender,
-                fps_source=fps_source,
-                fps_target=fps_target,
-                start_origin=start_origin,
-                person_id=args.person_id
-            )
-            export_animated_mesh(output_path)
+    print('--------------------------------------------------')
+    print('Animation export finished.')
+    print(f'Poses processed: {str(poses_processed)}')
+    print(f'Processing time : {time.perf_counter() - startTime:.2f} s')
+    print('--------------------------------------------------')
+    sys.exit(0)
 
-        print('--------------------------------------------------')
-        print('Animation export finished.')
-        print(f'Poses processed: {str(poses_processed)}')
-        print(f'Processing time : {time.perf_counter() - startTime:.2f} s')
-        print('--------------------------------------------------')
-        sys.exit(0)
+    # except SystemExit as ex:
+    #     if ex.code is None:
+    #         exit_status = 0
+    #     else:
+    #         exit_status = ex.code
 
-    except SystemExit as ex:
-        if ex.code is None:
-            exit_status = 0
-        else:
-            exit_status = ex.code
+    #     print('Exiting. Exit status: ' + str(exit_status))
 
-        print('Exiting. Exit status: ' + str(exit_status))
-
-        # Only exit to OS when we are not running in Blender GUI
-        if bpy.app.background:
-            sys.exit(exit_status)
+    #     # Only exit to OS when we are not running in Blender GUI
+    #     if bpy.app.background:
+    #         sys.exit(exit_status)
