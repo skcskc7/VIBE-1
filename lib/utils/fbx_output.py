@@ -253,10 +253,10 @@ if __name__ == '__main__':
         if bpy.app.background:
 
             parser = argparse.ArgumentParser(description='Create keyframed animated skinned SMPL mesh from VIBE output')
-            #parser.add_argument('--input', dest='input_path', type=str, required=True,
-            #                    help='Input file or directory')
-            #parser.add_argument('--output', dest='output_path', type=str, required=True,
-            #                    help='Output file or directory')
+            parser.add_argument('--input', dest='input_path', type=str, required=True,
+                                help='Input file or directory')
+            parser.add_argument('--output', dest='output_path', type=str, required=True,
+                                help='Output file or directory')
             parser.add_argument('--fps_source', type=int, default=fps_source,
                                 help='Source framerate')
             parser.add_argument('--fps_target', type=int, default=fps_target,
@@ -270,10 +270,10 @@ if __name__ == '__main__':
 
             args = parser.parse_args()
 
-            #input_path = args.input_path
-            #output_path = args.output_path
-            input_path = "./output/sample_video/vibe_output.pkl"
-            output_path = "./output/sample_video/fbx_output.fbx"
+            input_path = args.input_path
+            output_path = args.output_path
+            #input_path = "./output/sample_video/vibe_output.pkl"
+            #output_path = "./output/sample_video/fbx_output.fbx"
             
             if not os.path.exists(input_path):
                 print('ERROR: Invalid input path')
