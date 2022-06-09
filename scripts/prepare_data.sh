@@ -2,14 +2,14 @@
 
 mkdir -p data
 cd data
-gdown "https://drive.google.com/uc?id=1untXhYOLQtpNEy4GTY_0fL_H-k6cTf_r"
+gdown --id 1_NpGp7PXfqt6BOMrc-tfX2la7v3wANR_
 unzip vibe_data.zip
 rm vibe_data.zip
 
 # dw - download F/M SMPL models
 
-gdown --id 1hC_hgJCPtFQ72Pv5cnjr0BaieNAbb7zn
-gdown --id 1xxL-L0cL85jUz8MxfSEyQ5ai39E63X4r
+gdown --id 1MejOpR94dm5BKhMwVjguyjn-FoZBepgd
+gdown --id 1_8izI5wFV_S7gP0ZKeSw-O_ugFt55U8s
 
 cd ..
 
